@@ -1,21 +1,23 @@
 // tendra las rutas que guarden los 
 const express = require('express');
 const router = express.Router();
+const { isLoggedIn } = require('../lib/helpers')
 
 const pool = require('../database');
 
 
-router.get('/add', (req, res) =>{
+router.get('/add', isLoggedIn, (req, res) =>{
     res.render('links/add');
 })
 
-router.post('/add', async(req, res) =>{
+router.post('/add', isLoggedIn, async(req, res) =>{
     // obtengo los datos del formulario
     const { title, url, description } = req.body;
     const newLink = {
         title,
         url,
-        description
+        description,
+        user_id: req.user.id
     };
     // agrego los datos a la base de datos
     await pool.query('INSERT INTO links set ?', [newLink]);
@@ -26,8 +28,8 @@ router.post('/add', async(req, res) =>{
 
 
 // Devuelve todos los datos de la tabla links
-router.get('/', async(req, res) =>{
-    const links = await pool.query('SELECT * FROM links');
+router.get('/', isLoggedIn, async(req, res) =>{
+    const links = await pool.query('SELECT * FROM links WHERE user_id = ?', [req.user.id]);
     res.render('links/list', { links });
 });
 

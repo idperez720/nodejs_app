@@ -56,7 +56,13 @@ app.use((req, res, next) => {
     //req: Toma la información del usuario
     //res: Respuesta del servidor
     // next: codigo a ejecutar
+
+    // Variables de mensajes
     app.locals.success = req.flash('success');
+    app.locals.message = req.flash('message');
+
+    // Variables de las sesiones
+    app.locals.user = req.user;
     next();
 
 })
